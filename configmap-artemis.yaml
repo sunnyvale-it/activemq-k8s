@@ -34,7 +34,7 @@ data:
             oob_thread_pool.rejection_policy="run"
         />
 
-        <TRACE/>
+        <!--<TRACE/>-->
 
         <org.jgroups.protocols.kubernetes.KUBE_PING
             namespace="${KUBERNETES_NAMESPACE:default}"
@@ -327,15 +327,19 @@ data:
         <addresses>
             <address name="DLQ">
                 <anycast>
-                <queue name="DLQ" />
+                    <queue name="DLQ" />
                 </anycast>
             </address>
             <address name="ExpiryQueue">
                 <anycast>
-                <queue name="ExpiryQueue" />
+                    <queue name="ExpiryQueue" />
                 </anycast>
             </address>
-
+            <address name="test-anycast">
+                <anycast>
+                    <queue name="test-anycast" />
+                </anycast>
+            </address>
         </addresses>
 
 
