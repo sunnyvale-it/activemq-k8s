@@ -1,0 +1,70 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: activemq-artemis
+spec:
+  serviceName: "activemq-artemis"
+  selector:
+    matchLabels:
+      app: activemq-artemis
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: activemq-artemis
+    spec:
+      containers:
+      - name: activemq-artemis
+        image: sunnyvaleit/activemq-artemis:2.16.0
+        #image: sunnyvaleit/artemis-debian:2.16.0
+        imagePullPolicy: Always
+        env:
+          - name: ACTIVEMQ_LOGLEVEL
+            value: debug
+        ports:
+        - containerPort: 8161
+        - containerPort: 9404
+        - containerPort: 61616
+        - containerPort: 5445
+        - containerPort: 5672
+        - containerPort: 1883
+        - containerPort: 61613
+        - containerPort: 8888
+      #  readinessProbe:
+      #    tcpSocket:
+      #      port: 61616
+      #    initialDelaySeconds: 5
+      #    periodSeconds: 10
+      #  livenessProbe:
+      #    tcpSocket:
+      #      port: 61616
+      #    initialDelaySeconds: 15
+      #    periodSeconds: 20
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/artemis/data
+        - name: activemq-conf
+          mountPath: /var/lib/artemis/etc/broker.xml
+          subPath: broker.xml
+        - name: activemq-conf
+          mountPath: /var/lib/artemis/etc/jgroups.xml
+          subPath: jgroups.xml
+      volumes:
+      - name: activemq-conf
+        configMap:
+          name: activemq-conf # 
+          items:
+            - key: broker.xml
+              path: broker.xml
+            - key: jgroups.xml
+              path: jgroups.xml
+
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi
