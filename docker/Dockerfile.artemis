@@ -73,7 +73,8 @@ RUN if test "${ACTIVEMQ_ARTEMIS_VERSION}" = "1.0.0" ; \
         --role amq \
         --require-login \
         --cluster-user artemisCluster \
-        --cluster-password simetraehcaparetsulc ; \
+        --cluster-password simetraehcaparetsulc \
+        --relax-jolokia ; \
     fi 
 
 # Using KUBE_PING 0.9.3. Can't upgrade to 1.x.x as Artemis uses JGroups 3.3.x 
