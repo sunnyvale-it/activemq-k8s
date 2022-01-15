@@ -17,3 +17,12 @@ python3 queue_receiver.py
 for i in {1..100}; do python3 queue_sender.py $i; done
 
 Ref: https://developers.redhat.com/articles/2021/06/30/implementing-apache-activemq-style-broker-meshes-apache-artemis#configuring_the_artemis_broker_mesh
+
+
+
+python3 amqp_queue_receiver.py amqp://localhost /queue/test-anycast
+
+python3 amqp_queue_sender.py amqp://localhost /queue/test-anycast hello
+
+
+for i in {1..10000}; do python3 amqp_queue_sender.py amqp://localhost /queue/test-anycast $i; done
