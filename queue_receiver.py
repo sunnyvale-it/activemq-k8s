@@ -2,6 +2,7 @@ import time
 import sys
 
 import stomp
+from queue_utils import *
 
 class MyListener(stomp.ConnectionListener):
     def on_error(self, frame):
@@ -14,18 +15,6 @@ class MyListener(stomp.ConnectionListener):
     def on_connected(self, frame):
         print("Connected")
 
-def connect():
-    conn.connect('artemis', 'simetraehcapa', wait=True, keepalive=True, heartbeats=(4000, 4000))
-
-def subscribe():
-    conn.subscribe(destination='/queue/test-anycast', id=1, ack='auto')
-
-def connect_and_subscribe():
-    connect()
-    subscribe()
-
-hosts = [('localhost', 30979)]
-conn = stomp.Connection(host_and_ports=hosts)
 conn.set_listener('', MyListener())
 connect_and_subscribe()
 
