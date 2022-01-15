@@ -1,22 +1,18 @@
-import time
-import sys
-
 import stomp
-from queue_utils import *
+import sys
+from stomp_queue_utils import *
 
 class MyListener(stomp.ConnectionListener):
     def on_error(self, frame):
         print('Received an error "%s"' % frame.body)
-    def on_message(self, frame):
-        print('Received a message "%s"' % frame.body)
     def on_disconnected(self):
         print('Disconnected')
-        connect_and_subscribe()
+        connect()
     def on_connected(self, frame):
         print("Connected")
 
 conn.set_listener('', MyListener())
-connect_and_subscribe()
-
-time.sleep(99999999)
+connect()
+conn.send(body=' '.join(sys.argv[1:]), destination='/queue/test-anycast')
+print('Sent message: %s' % ' '.join(sys.argv[1:]))
 conn.disconnect()
