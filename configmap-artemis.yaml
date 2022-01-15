@@ -324,7 +324,7 @@ data:
             </address-setting>
         </address-settings>
 
-        <addresses>
+        <!--<addresses>
             <address name="DLQ">
                 <anycast>
                     <queue name="DLQ" />
@@ -340,7 +340,7 @@ data:
                     <queue name="test-anycast" />
                 </anycast>
             </address>
-        </addresses>
+        </addresses>-->
 
 
         <!-- Uncomment the following if you want to use the Standard LoggingActiveMQServerPlugin pluging to log in events
