@@ -14,7 +14,6 @@ class MyListener(stomp.ConnectionListener):
     def on_connected(self, frame):
         print("Connected")
 
-
 def connect():
     conn.connect('artemis', 'simetraehcapa', wait=True, keepalive=True, heartbeats=(4000, 4000))
 
@@ -29,11 +28,6 @@ hosts = [('localhost', 30979)]
 conn = stomp.Connection(host_and_ports=hosts)
 conn.set_listener('', MyListener())
 connect_and_subscribe()
-
-
-
-
-
 
 time.sleep(99999999)
 conn.disconnect()
