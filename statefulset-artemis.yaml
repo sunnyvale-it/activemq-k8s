@@ -23,6 +23,8 @@ spec:
         env:
           - name: ACTIVEMQ_LOGLEVEL
             value: debug
+          - name: ENABLE_JMX
+            value: "true"
         ports:
         - containerPort: 8161
         - containerPort: 9404
@@ -32,6 +34,7 @@ spec:
         - containerPort: 1883
         - containerPort: 61613
         - containerPort: 8888
+        - containerPort: 1099 # JMX
       #  readinessProbe:
       #    tcpSocket:
       #      port: 61616
@@ -51,15 +54,45 @@ spec:
         - name: activemq-conf
           mountPath: /var/lib/artemis/etc/jgroups.xml
           subPath: jgroups.xml
+        - name: activemq-conf
+          mountPath: /var/lib/artemis/etc/management.xml
+          subPath: management.xml
+          
+      - name: jmx-exporter
+        image: bitnami/jmx-exporter:latest
+        imagePullPolicy: Always
+        command: ["java"]
+        args: ["-Djava.util.logging.config.file=/etc/jmx_exporter/logging.properties", "-jar", "jmx_prometheus_httpserver.jar", "5556", "/etc/jmx_exporter/jmx_exporter.yaml"]
+        ports:
+        - containerPort: 5556
+          name: metrics
+        volumeMounts:
+        - name: jmx-exporter-conf
+          mountPath: /etc/jmx_exporter/jmx_exporter.yaml
+          subPath: jmx_exporter.yaml
+        - name: jmx-exporter-conf
+          mountPath: /etc/jmx_exporter/logging.properties
+          subPath: logging.properties
+
       volumes:
       - name: activemq-conf
         configMap:
-          name: activemq-conf # 
+          name: activemq-conf 
           items:
             - key: broker.xml
               path: broker.xml
             - key: jgroups.xml
               path: jgroups.xml
+            - key: management.xml
+              path: management.xml
+      - name: jmx-exporter-conf
+        configMap:
+          name: jmx-exporter-conf
+          items:
+            - key: jmx_exporter.yaml
+              path: jmx_exporter.yaml
+            - key: logging.properties
+              path: logging.properties
 
   volumeClaimTemplates:
   - metadata:

@@ -91,6 +91,7 @@ data:
 
         <name>0.0.0.0</name>
 
+        <jmx-management-enabled>true</jmx-management-enabled>
 
         <persistence-enabled>true</persistence-enabled>
 
@@ -243,6 +244,7 @@ data:
 
         <connectors>
             <connector name="netty-connector">tcp://${ipv4addr:localhost}:61618</connector>
+
         </connectors>
 
         <broadcast-groups>
@@ -322,9 +324,25 @@ data:
                 <auto-delete-queues>false</auto-delete-queues>
                 <auto-delete-addresses>false</auto-delete-addresses>
             </address-setting>
+            <address-setting match="/queue/#">
+                <dead-letter-address>DLQ</dead-letter-address>
+                <expiry-address>ExpiryQueue</expiry-address>
+                <redelivery-delay>0</redelivery-delay>
+                <!-- with -1 only the global-max-size is in use for limiting -->
+                <max-size-bytes>-1</max-size-bytes>
+                <message-counter-history-day-limit>10</message-counter-history-day-limit>
+                <address-full-policy>PAGE</address-full-policy>
+                <auto-create-queues>true</auto-create-queues>
+                <auto-create-addresses>true</auto-create-addresses>
+                <auto-create-jms-queues>true</auto-create-jms-queues>
+                <auto-create-jms-topics>true</auto-create-jms-topics>
+                <auto-delete-queues>false</auto-delete-queues>
+                <auto-delete-addresses>false</auto-delete-addresses>
+                <default-address-routing-type>ANYCAST</default-address-routing-type>
+            </address-setting>
         </address-settings>
 
-        <!--<addresses>
+        <addresses>
             <address name="DLQ">
                 <anycast>
                     <queue name="DLQ" />
@@ -335,12 +353,12 @@ data:
                     <queue name="ExpiryQueue" />
                 </anycast>
             </address>
-            <address name="test-anycast">
+            <!--<address name="test-anycast">
                 <anycast>
                     <queue name="test-anycast" />
                 </anycast>
-            </address>
-        </addresses>-->
+            </address>-->
+        </addresses>
 
 
         <!-- Uncomment the following if you want to use the Standard LoggingActiveMQServerPlugin pluging to log in events
@@ -359,4 +377,54 @@ data:
 
         </core>
     </configuration>
+  management.xml: |
+    <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+    <!--
+    ~ Licensed to the Apache Software Foundation (ASF) under one or more
+    ~ contributor license agreements. See the NOTICE file distributed with
+    ~ this work for additional information regarding copyright ownership.
+    ~ The ASF licenses this file to You under the Apache License, Version 2.0
+    ~ (the "License"); you may not use this file except in compliance with
+    ~ the License. You may obtain a copy of the License at
+    ~
+    ~     http://www.apache.org/licenses/LICENSE-2.0
+    ~
+    ~ Unless required by applicable law or agreed to in writing, software
+    ~ distributed under the License is distributed on an "AS IS" BASIS,
+    ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    ~ See the License for the specific language governing permissions and
+    ~ limitations under the License.
+    -->
+    <management-context xmlns="http://activemq.org/schema">
+        <connector connector-port="1099"/>
+        <authorisation>
+            <whitelist>
+                <entry domain="hawtio"/>
+            </whitelist>
+            <default-access>
+                <access method="list*" roles="amq"/>
+                <access method="get*" roles="amq"/>
+                <access method="is*" roles="amq"/>
+                <access method="set*" roles="amq"/>
+                <access method="*" roles="amq"/>
+            </default-access>
+            <role-access>
+                <match domain="org.apache.activemq.artemis">
+                    <access method="list*" roles="amq"/>
+                    <access method="get*" roles="amq"/>
+                    <access method="is*" roles="amq"/>
+                    <access method="set*" roles="amq"/>
+                    <access method="*" roles="amq"/>
+                </match>
+                <!--example of how to configure a specific object-->
+                <!--<match domain="org.apache.activemq.artemis" key="subcomponent=queues">
+                    <access method="list*" roles="view,update,amq"/>
+                    <access method="get*" roles="view,update,amq"/>
+                    <access method="is*" roles="view,update,amq"/>
+                    <access method="set*" roles="update,amq"/>
+                    <access method="*" roles="amq"/>
+                </match>-->
+            </role-access>
+        </authorisation>
+    </management-context>
     

@@ -1,0 +1,37 @@
+kind: ConfigMap 
+apiVersion: v1 
+metadata:
+  name: jmx-exporter-conf
+data:
+  logging.properties:
+    handlers=java.util.logging.ConsoleHandler
+    java.util.logging.ConsoleHandler.level=ALL
+    io.prometheus.jmx.level=ALL
+    io.prometheus.jmx.shaded.io.prometheus.jmx.level=ALL
+  jmx_exporter.yaml: |
+    ---
+    # hostPort: 127.0.0.1:1099
+    username: 
+    password: 
+    jmxUrl: service:jmx:rmi:///jndi/rmi://127.0.0.1:1099/jmxrmi
+    ssl: false
+    lowercaseOutputName: true
+    lowercaseOutputLabelNames: true
+    rules:
+      - pattern: "^org.apache.activemq.artemis<broker=\"([^\"]*)\"><>([^:]*):\\s(.*)"
+        attrNameSnakeCase: true
+        name: artemis_$2
+        type: COUNTER
+      - pattern: "^org.apache.activemq.artemis<broker=\"([^\"]*)\",\\s*component=addresses,\\s*address=\"([^\"]*)\"><>([^:]*):\\s(.*)"
+        attrNameSnakeCase: true
+        name: artemis_$3
+        type: COUNTER
+        labels:
+            address: $2
+      - pattern: "^org.apache.activemq.artemis<broker=\"([^\"]*)\",\\s*component=addresses,\\s*address=\"([^\"]*)\",\\s*subcomponent=(queue|topic)s,\\s*routing-type=\"([^\"]*)\",\\s*(queue|topic)=\"([^\"]*)\"><>([^: ]*):\\s(.*)"
+        attrNameSnakeCase: true
+        name: artemis_$7
+        type: COUNTER
+        labels:
+            address: $2
+            "$5": $6

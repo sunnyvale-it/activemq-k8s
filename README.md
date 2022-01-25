@@ -26,3 +26,17 @@ python3 amqp_queue_sender.py amqp://localhost /queue/test-anycast hello
 
 
 for i in {1..10000}; do python3 amqp_queue_sender.py amqp://localhost /queue/test-anycast $i; done
+
+
+
+# Prometheus
+
+```console
+$ helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+$ helm repo update
+$ helm install prometheus-stack prometheus-community/kube-prometheus-stack --values prometheus-stack-values.yaml -n monitoring  --create-namespace
+```
+
+
+
+kubectl run -ti --rm busybox --image busybox -- /bin/sh
