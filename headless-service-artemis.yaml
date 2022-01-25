@@ -27,6 +27,10 @@ spec:
     port: 1883
     targetPort: 1883
     protocol: TCP
+  - name: metrics
+    port: 5556
+    targetPort: 5556
+    protocol: TCP
   clusterIP: None
   selector:
     app: activemq-artemis
